@@ -5,7 +5,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 
 @SuppressWarnings("unused")
 public class HbaseWrklis {
@@ -17,7 +18,7 @@ public class HbaseWrklis {
                              //Create a hbaseAdmin
                              Configuration config = HBaseConfiguration.create();
                              @SuppressWarnings("resource")
-                                 HBaseAdmin admin = new HBaseAdmin(config);
+                             Admin admin = ConnectionFactory.createConnection(config).getAdmin();
                              HTableDescriptor[] tableDescriptor = admin.listTables();
                              {
                              // printing all the table names.

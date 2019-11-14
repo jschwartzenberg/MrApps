@@ -1,14 +1,23 @@
 package org.example.hadoop;
 
+import static java.util.concurrent.Executors.newFixedThreadPool;
+
 import java.io.IOException;
-
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.util.Bytes;
-
+import java.util.concurrent.Executors;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellBuilderFactory;
+import org.apache.hadoop.hbase.CellBuilderType;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.client.TableBuilder;
+import org.apache.hadoop.hbase.util.Bytes;
 
 public class HbaseWrkinsrt {
 
@@ -19,23 +28,20 @@ public class HbaseWrkinsrt {
               Configuration config = HBaseConfiguration.create();
 
            // Instantiating HTable class
-              HTable hTable = new HTable(config, "employeeH");
+              String string = "employeeH";
+              Table hTable =  ConnectionFactory.createConnection(config).getTableBuilder(TableName.valueOf("employeeH"), newFixedThreadPool(1)).build();
 
               // Instantiating Put class
               // accepts a row name.
               Put p = new Put(Bytes.toBytes("row1"));
            // adding values using add() method
               // accepts column family name, qualifier/row name ,value
-              p.add(Bytes.toBytes("personal"),
-              Bytes.toBytes("name"),Bytes.toBytes("raju"));
+              p.add(createCell("personal", "name", "raju"));
 
-              p.add(Bytes.toBytes("personal"),
-              Bytes.toBytes("city"),Bytes.toBytes("hyderabad"));
-              p.add(Bytes.toBytes("professional"),Bytes.toBytes("designation"),
-              Bytes.toBytes("manager"));
+              p.add(createCell("personal", "city", "hyderabad"));
+              p.add(createCell("professional", "designation", "manager"));
 
-              p.add(Bytes.toBytes("professional"),Bytes.toBytes("salary"),
-              Bytes.toBytes("50000"));
+              p.add(createCell("professional", "salary", "50000"));
 
               // Saving the put Instance to the HTable.
               hTable.put(p);
@@ -44,5 +50,9 @@ public class HbaseWrkinsrt {
               // closing HTable
               hTable.close();
         }
+
+		private static Cell createCell(String family, String qualifier, String value) {
+			return CellBuilderFactory.create(CellBuilderType.SHALLOW_COPY).setFamily(family.getBytes()).setQualifier(qualifier.getBytes()).setValue(value.getBytes()).build();
+		}
 
 }

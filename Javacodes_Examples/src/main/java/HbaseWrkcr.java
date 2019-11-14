@@ -2,34 +2,32 @@ package org.example.hadoop;
 
 import java.io.IOException;
 
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-
-
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.ColumnFamilyDescriptorBuilder;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.TableDescriptorBuilder;
 public class HbaseWrkcr {
 
         public static void main(String[] args) throws IOException{
-                // TODO Auto-generated method stub
+				// TODO Auto-generated method stub
 
               // Instantiating table descriptor class
-              @SuppressWarnings("deprecation")
-			HTableDescriptor descriptor = new
-              HTableDescriptor("employeeH");
+        	TableDescriptorBuilder tableDescriptorBuilder = TableDescriptorBuilder.newBuilder(TableName.valueOf("employeeH"));
 
               // Adding column families to table descriptor
-              descriptor.addFamily(new HColumnDescriptor("personal"));
-              descriptor.addFamily(new HColumnDescriptor("professional"));
+              tableDescriptorBuilder.addColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder("personal".getBytes()).build());
+              tableDescriptorBuilder.addColumnFamily(ColumnFamilyDescriptorBuilder.newBuilder("professional".getBytes()).build());
 
                {
               //Create a hbaseAdmin
               Configuration config = HBaseConfiguration.create();
-              @SuppressWarnings("resource")
-                HBaseAdmin admin = new HBaseAdmin(config);
+              Admin admin = ConnectionFactory.createConnection(config).getAdmin();
+
 
               // Execute the table through admin
-              admin.createTable(descriptor);
+              admin.createTable(tableDescriptorBuilder.build());
               System.out.println(" Table created ");
               }}}
